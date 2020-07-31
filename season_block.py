@@ -1,6 +1,18 @@
 
 import datetime
+import enum
 from cabin_week import *
+
+"""
+enum types of season blocks. 
+
+"""
+
+class season_block_type(enum.Enum):
+	opening = 1 	# defined by "contains opening week"
+	prime = 2		# defined by "contains max number of july weeks (contains august is tie breaker)"
+	marginal = 3 	# defined by "anything that is not already assigned a type"
+	closing = 4		# defined by "contains closing week"
 
 """
 
@@ -15,10 +27,10 @@ for this implementation we will build our blocks into 8 week segments.
 
 class season_block:
 
-	def __init__(self, start_date, end_date, block_type):
+	def __init__(self, start_date, end_date, season_block_type):
 		self.start_date = start_date
 		self.end_date = end_date
-		self.block_type = block_type
+		self.season_block_type = season_block_type
 		self.weeks = self.__segment_block_weeks(start_date, end_date)
 
 	def __segment_block_weeks(self, start_date, end_date):
@@ -33,8 +45,10 @@ class season_block:
 		delta = datetime.timedelta(weeks=1)
 		curr = start_date
 		while curr < end_date:
-			weeks.append(cabin_week(curr))
+			weeks.append(cabin_week(curr, self.season_block_type))
 			curr += delta
+
+		return weeks
 
 
 

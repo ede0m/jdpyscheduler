@@ -1,25 +1,33 @@
-from cabin_season import *
+from designator import *
 
 # main call script
 
-year = 2020
+def schedule_year(year):
+
+	print('\n--------------------------------')
+
+	season = cabin_season(year, weeks_per_block, len(families))
+
+	print('\n--------------------------------\n\nseason goes from ', season.opening_week_start_date, ' to ', season.closing_week_start_date, '\n')
+	assigned_season = d.assign_season(season)
+
+	for w in assigned_season:
+		print("{:<10s}\t | \t{:<10s} | \t{:<10s}".format(w.start_date.strftime("%m-%d-%Y"), w.family_assigned, w.season_block_type.name))
+
+	print('\n')
+
 weeks_per_block = 3
 families = ['moede', 'olson', 'warren', 'dave', 'blackmon', 'lucci']
+d = designator(families)
 
 print('\nJuniper Dunes Scheduler v 1.0\n--------------------------------')
-print('\n'+str(year) + ' weeks per prime season block:', weeks_per_block)
-print(str(year) + ' number of families participating:', len(families))
-print('\n--------------------------------')
+print('\nweeks per prime season block:', weeks_per_block)
+print('number of families participating:', len(families))
 
-cabin_season = cabin_season(year, weeks_per_block, len(families))
-n_prime_blocks = sum(1 for b in cabin_season.season_blocks if b.block_type == season_block_type.prime)
+year = 2020
+while year < 2025:
+	schedule_year(year)
+	year += 1
 
-print('\nseason goes from ', cabin_season.opening_week_start_date, ' to ', cabin_season.closing_week_start_date)
-print('\n'+str(year) + ' number of prime season weeks:', n_prime_blocks * weeks_per_block)
-print(str((n_prime_blocks * weeks_per_block) / len(families))+ ' prime weeks per family\n')
 
-for b in cabin_season.season_blocks:
-	print(b.start_date, b.end_date, b.block_type)
-
-print('\n')
 

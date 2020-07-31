@@ -1,17 +1,7 @@
 
 import calendar
-import enum
 from season_block import *
 
-"""
-
-"""
-
-class season_block_type(enum.Enum):
-	opening = 1 	# defined by "contains opening week"
-	prime = 2		# defined by "contains max number of july weeks (contains august is tie breaker)"
-	marginal = 3 	# defined by "anything that is not already assigned a type"
-	closing = 4		# defined by "contains closing week"
 
 """
 

@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-bin/*
+juniper_dunes_env/*
 .Python
 build/
 develop-eggs/

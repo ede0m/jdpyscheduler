@@ -9,10 +9,11 @@ enum types of season blocks.
 """
 
 class season_block_type(enum.Enum):
-	opening = 1 	# defined by "contains opening week"
-	prime = 2		# defined by "contains max number of july weeks (contains august is tie breaker)"
-	marginal = 3 	# defined by "anything that is not already assigned a type"
-	closing = 4		# defined by "contains closing week"
+	opening = 1 	
+	early = 2
+	prime = 3		
+	late = 4 	
+	closing = 5		
 
 """
 

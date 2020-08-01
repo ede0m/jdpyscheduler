@@ -6,7 +6,13 @@ def schedule_year(year):
 
 	print('\n--------------------------------')
 
-	season = cabin_season(year, weeks_per_block, len(families))
+	season = cabin_season(year, len(families))
+	
+	"""
+	for b in season.season_blocks:
+		for w in b.weeks:
+			print(w.start_date, w.season_block_type)
+	"""
 
 	print('\n--------------------------------\n\nseason goes from ', season.opening_week_start_date, ' to ', season.closing_week_start_date, '\n')
 	assigned_season = d.assign_season(season)
@@ -16,12 +22,12 @@ def schedule_year(year):
 
 	print('\n')
 
-weeks_per_block = 3
+
+
 families = ['moede', 'olson', 'warren', 'dave', 'blackmon', 'lucci']
 d = designator(families)
 
 print('\nJuniper Dunes Scheduler v 1.0\n--------------------------------')
-print('\nweeks per prime season block:', weeks_per_block)
 print('number of families participating:', len(families))
 
 year = 2020

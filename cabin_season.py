@@ -14,39 +14,45 @@ class cabin_season:
 	season_calander = calendar.Calendar(firstweekday=calendar.SUNDAY)
 	change_segment = datetime.timedelta(weeks=1)
 
-	def __init__(self, year, block_week_size, n_families):
+	def __init__(self, year, n_families):
 
 		self.year = year
-		open_close_weeks = self.__set_open_close_weeks(n_families)
+		open_close_weeks = self.__get_open_close_weeks(n_families)
 		self.opening_week_start_date = open_close_weeks[0]
 		self.closing_week_start_date = open_close_weeks[1]
-		self.season_blocks = self.__create_season_blocks(block_week_size)
+		self.n_weeks = (self.closing_week_start_date - self.opening_week_start_date).days / 7
+		self.season_blocks = self.__create_season_blocks()
 
 
-	def __create_season_blocks(self, block_week_size):
+	def __create_season_blocks(self):
 
 		season_blocks = []
-		weeks_in_block = 0
 
 		if self.opening_week_start_date is not None and self.closing_week_start_date is not None:
 
 			curr_date = self.opening_week_start_date
+			curr_date_block_type = season_block_type.opening
+			this_block_type = season_block_type.opening
+
+			# iterate whole year
 			while curr_date < self.closing_week_start_date:
 				start_block_date = curr_date
-				while weeks_in_block < block_week_size:
+				while curr_date_block_type is this_block_type:
 					curr_date += cabin_season.change_segment
-					weeks_in_block += 1
+					curr_date_block_type = self.__get_season_block_type(curr_date)
 				end_block_date = curr_date
-				block_type = self.__set_season_block_type(start_block_date, end_block_date)
-				season_blocks.append(season_block(start_block_date, end_block_date, block_type))
-				weeks_in_block = 0
+				
+				#block_type = self.__set_season_block_type(start_block_date, end_block_date)
+				season_blocks.append(season_block(start_block_date, end_block_date, this_block_type))
+				this_block_type = curr_date_block_type
+
 		else:
 			raise ValueError("cabin season ", self.year, " is missing opening/closing weeks")
 
 		return season_blocks
 
 
-	def __set_open_close_weeks(self, n_families):
+	def __get_open_close_weeks(self, n_families):
 		
 		print('\nstarting dynamic scheduling ...\n')
 
@@ -55,9 +61,9 @@ class cabin_season:
 		earliest_open_date = april_calander[1][0]
 		open_date = earliest_open_date	
 
-		# latest possible closing week is third week of oct 
+		# latest possible closing week is fourth week of oct 
 		oct_calander = cabin_season.season_calander.monthdatescalendar(self.year, 10)
-		latest_close_date = oct_calander[2][0]
+		latest_close_date = oct_calander[3][0]
 		close_date = latest_close_date
 
 		max_available_weeks = (close_date - open_date).days / 7
@@ -81,6 +87,33 @@ class cabin_season:
 		return (open_date, close_date)
 
 
+	def __get_season_block_type(self, week_start_date):
+
+		# opening season is first 3 weeks of season
+		if self.opening_week_start_date <= week_start_date <= self.opening_week_start_date + (cabin_season.change_segment * 2):
+			return season_block_type.opening
+		# closing season is last three weeks of season
+		elif self.closing_week_start_date - (cabin_season.change_segment * 2) <= week_start_date <= self.closing_week_start_date:
+			return season_block_type.closing
+		else:
+			curr_date = week_start_date
+			delta_day = datetime.timedelta(days=1)
+			while curr_date < (week_start_date + cabin_season.change_segment):
+				# prime time is any week that has days in july or august
+				if curr_date.month == 7 or curr_date.month == 8:
+					return season_block_type.prime
+				curr_date += delta_day
+
+			# early is not prime and before july
+			if week_start_date.month < 7:
+				return season_block_type.early
+			# late is not prime and after august
+			else:
+				return season_block_type.late
+
+
+
+"""
 	def __set_season_block_type(self, start_block_date, end_block_date):
 
 		# opening = 1 	# defined by "contains opening week"
@@ -113,6 +146,8 @@ class cabin_season:
 				return season_block_type.prime
 			else:
 				return season_block_type.marginal
+
+"""
 
 
 

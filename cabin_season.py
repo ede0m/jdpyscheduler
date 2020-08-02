@@ -58,12 +58,12 @@ class cabin_season:
 
 		# earliest start is second week of april
 		april_calander = cabin_season.season_calander.monthdatescalendar(self.year, 4)
-		earliest_open_date = april_calander[1][0]
+		earliest_open_date = april_calander[2][0]
 		open_date = earliest_open_date	
 
-		# latest possible closing week is fourth week of oct 
+		# latest possible closing week is third week of oct 
 		oct_calander = cabin_season.season_calander.monthdatescalendar(self.year, 10)
-		latest_close_date = oct_calander[3][0]
+		latest_close_date = oct_calander[2][0]
 		close_date = latest_close_date
 
 		max_available_weeks = (close_date - open_date).days / 7

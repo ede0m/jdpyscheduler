@@ -113,42 +113,5 @@ class cabin_season:
 
 
 
-"""
-	def __set_season_block_type(self, start_block_date, end_block_date):
-
-		# opening = 1 	# defined by "contains opening week"
-		# prime = 2		# defined by "contains at least 2 weeks in july, starts within the second half of June, or ends before the second half of august"
-		# marginal = 3 	# defined by "anything that is not already assigned a type"
-		# closing = 4	# defined by "contains closing week"
-
-		if start_block_date <= self.opening_week_start_date <= end_block_date:
-			return season_block_type.opening
-		elif start_block_date <= self.closing_week_start_date <= end_block_date:
-			return season_block_type.closing
-		else:
-			delta_day = datetime.timedelta(days=1)
-			# find prime time
-			curr_date = start_block_date
-			n_july_days = 0
-			while curr_date < end_block_date:
-				if curr_date.month == 7:
-					n_july_days += 1
-				curr_date += delta_day
-
-			# contains at least 2 weeks in july
-			if n_july_days >= 14: 
-				return season_block_type.prime
-			# starts within the second half of June or ends in july
-			elif start_block_date.month == 6 and (start_block_date.day > 15 or end_block_date.month == 7): 
-				return season_block_type.prime
-			# ends before the second half of august or starts in july
-			elif end_block_date.month == 8 and (end_block_date.day <= 16 or start_block_date.month == 7): 
-				return season_block_type.prime
-			else:
-				return season_block_type.marginal
-
-"""
-
-
 
 

@@ -73,10 +73,21 @@ class designator:
 
 	def __assign_family_to_week(self, cabin_week, fam_pick_idx):
 		block_type = cabin_week.season_block_type
+		
+		# get a family that still needs weeks for this year
 		family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
+		while self.family_weeks_claimed[family] >= self.max_family_weeks_per_year:
+			family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
+			fam_pick_idx += 1
+			# rotate after everyone goes
+			if fam_pick_idx >= len(self.family_pick_orders[block_type]['order']):
+				self.family_pick_orders[block_type]['order'] = self.__rotate_pick_order(self.family_pick_orders[block_type]['order'])
+				fam_pick_idx = 0
+
 		cabin_week.assign_family(family)
 		self.family_weeks_claimed[family] += 1
 		self.family_pick_orders[block_type]['current_index'] = fam_pick_idx + 1
+
 		# rotate after everyone goes
 		if self.family_pick_orders[block_type]['current_index'] >= len(self.family_pick_orders[block_type]['order']):
 			self.family_pick_orders[block_type]['order'] = self.__rotate_pick_order(self.family_pick_orders[block_type]['order'])

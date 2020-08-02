@@ -1,5 +1,6 @@
 
 import calendar
+import numpy as np
 from season_block import *
 
 
@@ -20,11 +21,11 @@ class cabin_season:
 		open_close_weeks = self.__get_open_close_weeks(n_families)
 		self.opening_week_start_date = open_close_weeks[0]
 		self.closing_week_start_date = open_close_weeks[1]
-		self.n_weeks = (self.closing_week_start_date - self.opening_week_start_date).days / 7
-		self.season_blocks = self.__create_season_blocks()
+		self.n_weeks = ((self.closing_week_start_date + cabin_season.change_segment) - self.opening_week_start_date).days / 7
+		self.season_blocks = self.__create_season()
 
 
-	def __create_season_blocks(self):
+	def __create_season(self):
 
 		season_blocks = []
 
@@ -36,6 +37,8 @@ class cabin_season:
 
 			# iterate whole year
 			while curr_date < self.closing_week_start_date:
+				
+				# create blocks
 				start_block_date = curr_date
 				while curr_date_block_type is this_block_type:
 					curr_date += cabin_season.change_segment
@@ -45,6 +48,15 @@ class cabin_season:
 				#block_type = self.__set_season_block_type(start_block_date, end_block_date)
 				season_blocks.append(season_block(start_block_date, end_block_date, this_block_type))
 				this_block_type = curr_date_block_type
+
+			# assign points to week slots
+			idx = 0
+			for b in season_blocks:
+				for w in b.weeks:
+					w.point_value += (idx/(self.n_weeks))
+					if idx > self.n_weeks/2:
+						w.point_value -= (idx%(self.n_weeks/2))/(self.n_weeks/2)
+					idx += 1
 
 		else:
 			raise ValueError("cabin season ", self.year, " is missing opening/closing weeks")

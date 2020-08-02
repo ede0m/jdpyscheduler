@@ -15,6 +15,7 @@ class designator:
 
 		self.family_pick_orders = self.__create_initial_pick_order(families)
 		self.family_weeks_claimed = dict((f, 0) for f in families)
+		self.family_points = dict((f, 0) for f in families)
 
 
 	def assign_season(self, cabin_season):
@@ -77,14 +78,15 @@ class designator:
 		# get a family that still needs weeks for this year
 		family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
 		while self.family_weeks_claimed[family] >= self.max_family_weeks_per_year:
-			family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
 			fam_pick_idx += 1
 			# rotate after everyone goes
 			if fam_pick_idx >= len(self.family_pick_orders[block_type]['order']):
 				self.family_pick_orders[block_type]['order'] = self.__rotate_pick_order(self.family_pick_orders[block_type]['order'])
 				fam_pick_idx = 0
+			family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
 
 		cabin_week.assign_family(family)
+		self.family_points[family] += round(cabin_week.point_value, 3)
 		self.family_weeks_claimed[family] += 1
 		self.family_pick_orders[block_type]['current_index'] = fam_pick_idx + 1
 

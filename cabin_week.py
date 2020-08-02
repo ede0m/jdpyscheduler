@@ -13,6 +13,7 @@ class cabin_week:
 		self.start_date = start_date
 		self.season_block_type = season_block_type
 		self.family_assigned = None
+		self.point_value = 0.5
 
 	def assign_family(self, family_name):
 		self.family_assigned = family_name

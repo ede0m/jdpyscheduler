@@ -67,8 +67,8 @@ class cabin_season:
 		close_date = latest_close_date
 
 		max_available_weeks = (close_date - open_date).days / 7
-		# start stripping from tail of season
-		strip_from = close_date
+		# start stripping from head of season
+		strip_from = open_date
 		while max_available_weeks % n_families != 0:
 
 			print('max_available_weeks:', max_available_weeks, 'for', n_families, 'families.', open_date, ' - ', close_date)
@@ -82,7 +82,7 @@ class cabin_season:
 				print('stripping head of schedule. new open:', open_date)
 				strip_from = close_date # alternate stripper to tail of season
 
-			max_available_weeks = (close_date - open_date).days / 7
+			max_available_weeks = ((close_date + cabin_season.change_segment) - open_date).days / 7
 
 		return (open_date, close_date)
 

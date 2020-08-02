@@ -27,41 +27,31 @@ class designator:
 		for b in cabin_season.season_blocks:
 			block_type = b.season_block_type
 			weeks_per_fam_in_block = len(b.weeks) / len(self.family_weeks_claimed.keys())
-			fam_idx = self.family_pick_orders[block_type]['current_index']
 
 			# everyone can fit and more
 			if weeks_per_fam_in_block > 1:
+				# assign some back to back weeks
 				n_fams_to_double = len(b.weeks) % len(self.family_weeks_claimed.keys())
-				fam_idx = 0
-				for idx, w in enumerate(b.weeks):
-					self.__assign_family_to_week(w, self.family_pick_orders[block_type]['order'][fam_idx])
-					if (idx % 2 is 1 and fam_idx < n_fams_to_double) or fam_idx >= n_fams_to_double:
-						# back to back week for this fam_idx
-						self.family_pick_orders[block_type]['current_index'] = fam_idx
-						fam_idx += 1
-						
-			# have to cycle across seasons
-			elif weeks_per_fam_in_block < 1:
-				for w in b.weeks:
-					self.__assign_family_to_week(w, self.family_pick_orders[block_type]['order'][fam_idx])
-					fam_idx += 1
-					self.family_pick_orders[block_type]['current_index'] = fam_idx
 
-			# each fam gets 1 week
+				# assign weeks later in the block first if 'early' in season
+				if block_type is season_block_type.early:
+					b.weeks = b.weeks[::-1]
+
+				for idx, w in enumerate(b.weeks):
+					fam_pick_idx = self.family_pick_orders[block_type]['current_index']
+					self.__assign_family_to_week(w, fam_pick_idx)
+					if (idx % 2 is 0 and fam_pick_idx < n_fams_to_double):
+						# hold the pick at this family
+						self.family_pick_orders[block_type]['current_index'] = fam_pick_idx
+						
+			# family gets less than or exactly 1 week. rotate across calander years
 			else:
 				for w in b.weeks:
-					self.__assign_family_to_week(w, self.family_pick_orders[block_type]['order'][fam_idx])
-					fam_idx += 1
-					self.family_pick_orders[block_type]['current_index'] = fam_idx
-
-			if fam_idx >= len(self.family_pick_orders[block_type]['order']):
-				# rotate after everyone goes
-				self.family_pick_orders[block_type]['order'] = self.__rotate_pick_order(self.family_pick_orders[block_type]['order'])
-				self.family_pick_orders[block_type]['current_index'] = 0
+					self.__assign_family_to_week(w, self.family_pick_orders[block_type]['current_index'])
 
 			season.extend(b.weeks)
 
-		return season
+		return sorted(season, key=lambda x: x.start_date)
 
 		
 
@@ -81,13 +71,16 @@ class designator:
 		return rotated
 
 
-	def __assign_family_to_week(self, cabin_week, family):
-		# can't assign if you pass the max family weeks per year
-#		if self.family_weeks_claimed[family] < self.max_family_weeks_per_year and cabin_week.family_assigned is None:
+	def __assign_family_to_week(self, cabin_week, fam_pick_idx):
+		block_type = cabin_week.season_block_type
+		family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
 		cabin_week.assign_family(family)
 		self.family_weeks_claimed[family] += 1
-			#return True
-		#return False
+		self.family_pick_orders[block_type]['current_index'] = fam_pick_idx + 1
+		# rotate after everyone goes
+		if self.family_pick_orders[block_type]['current_index'] >= len(self.family_pick_orders[block_type]['order']):
+			self.family_pick_orders[block_type]['order'] = self.__rotate_pick_order(self.family_pick_orders[block_type]['order'])
+			self.family_pick_orders[block_type]['current_index'] = 0
 
 
 

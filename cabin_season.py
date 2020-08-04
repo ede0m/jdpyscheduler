@@ -1,6 +1,6 @@
 
 import calendar
-import numpy as np
+import math
 from season_block import *
 
 
@@ -50,18 +50,29 @@ class cabin_season:
 				this_block_type = curr_date_block_type
 
 			# assign points to week slots
-			idx = 0
-			for b in season_blocks:
-				for w in b.weeks:
-					w.point_value += (idx/(self.n_weeks))
-					if idx > self.n_weeks/2:
-						w.point_value -= (idx%(self.n_weeks/2))/(self.n_weeks/2)
-					idx += 1
+			self.__assign_value_to_weeks(season_blocks)
 
 		else:
 			raise ValueError("cabin season ", self.year, " is missing opening/closing weeks")
 
 		return season_blocks
+
+	def __assign_value_to_weeks(self, season_blocks):
+		# assign points to week slots
+		idx = 1
+		points = 0
+		for b in season_blocks:
+			for w in b.weeks:
+				w.point_value += min(1, (idx/math.ceil(self.n_weeks/2)))
+				# handle median hump cases
+				if idx > ((self.n_weeks/2 + 1) if (self.n_weeks % 2) == 0 else (math.ceil(self.n_weeks/2))):
+					sub_idx = (idx-1) if (self.n_weeks % 2) == 0 else (idx)
+					w.point_value -= ((sub_idx)-(math.ceil(self.n_weeks/2)))/(math.ceil(self.n_weeks/2))
+				
+				points+=w.point_value
+				idx += 1
+
+		print(points)
 
 
 	def __get_open_close_weeks(self, n_families):

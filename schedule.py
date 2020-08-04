@@ -21,7 +21,7 @@ def schedule_year(year):
 
 	assigned_season = d.assign_season(season)
 	for w in assigned_season:
-		print("{:<10s}\t | \t{:<10s} | \t{:<10s} |\t{:<10s}".format(w.start_date.strftime("%m-%d-%Y"), w.family_assigned, w.season_block_type.name, str(round(w.point_value, 3))))
+		print("{:<10s}\t | \t{:<10s} | \t{:<10s} |\t{:<10s}".format(w.start_date.strftime("%m-%d-%Y"), w.family_assigned, w.season_block_type.name, str(round(w.point_value, 2))))
 
 
 	print('\n')

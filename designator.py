@@ -14,8 +14,8 @@ class designator:
 	def __init__(self, families):
 
 		self.family_pick_orders = self.__create_initial_pick_order(families)
-		self.family_weeks_claimed = dict((f, 0) for f in families)
-		self.family_points = dict((f, 0) for f in families)
+		self.family_weeks_claimed = dict((f, 0.0) for f in families)
+		self.family_points = dict((f, 0.0) for f in families)
 
 
 	def assign_season(self, cabin_season):
@@ -86,7 +86,7 @@ class designator:
 			family = self.family_pick_orders[block_type]['order'][fam_pick_idx]
 
 		cabin_week.assign_family(family)
-		self.family_points[family] += round(cabin_week.point_value, 3)
+		self.family_points[family] += round(cabin_week.point_value, 2)
 		self.family_weeks_claimed[family] += 1
 		self.family_pick_orders[block_type]['current_index'] = fam_pick_idx + 1
 
